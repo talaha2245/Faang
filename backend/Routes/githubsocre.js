@@ -1,5 +1,5 @@
-const express = require('express');
+import express from 'express';
 
 const githubrouter = express.Router();
 
-module.exports = githubrouter;
+export default githubrouter;

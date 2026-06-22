@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
 // importing router 
-const modelRouter = require('./model.router');
-const Authrouter = require('./Auth.router');
-const githubrouter = require('./githubsocre');
-const leetcoderouter = require('./Leetcode.router');
+import modelRouter from './model.router.js';
+import Authrouter from './Auth.router.js';
+import githubrouter from './githubsocre.js';
+import leetcoderouter from './Leetcode.router.js';
 
 const MainRouter = express.Router();
 MainRouter.use('/model',modelRouter);
@@ -11,5 +11,5 @@ MainRouter.use('/auth',Authrouter);
 MainRouter.use('/github',githubrouter);
 MainRouter.use('/leetcode',leetcoderouter);
 
-module.exports = MainRouter;
+export default MainRouter;
 

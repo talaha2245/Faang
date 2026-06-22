@@ -1,3 +1,3 @@
-const express = require('express');
+import express from 'express';
 const leetcoderouter = express.Router();
-module.exports = leetcoderouter;
+export default leetcoderouter;

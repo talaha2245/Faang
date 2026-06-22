@@ -1,6 +1,6 @@
-const express = require('express');
-const cors = require('cors');
-const MainRouter = require('./Routes/main');
+import express from 'express';
+import cors from 'cors';
+import MainRouter from './Routes/main.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
