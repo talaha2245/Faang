@@ -1,3 +1,15 @@
-node_modules/
-*.env
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environments
+venv/
+env/
 model_env/
+
+# Node
+node_modules/
+
+# Mac
+.DS_Store
