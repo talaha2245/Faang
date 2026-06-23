@@ -1,12 +1,13 @@
-import express from 'express'
+import express from 'express';
 // storing the db
 import { Leetcode, User } from './model.js';
+import { verifyToken } from './Auth.router.js';
+
 const leetcoderouter = express.Router();
 
-leetcoderouter.get('/getUserProfile/:username', (req, res) => {
+leetcoderouter.get('/getUserProfile/:username', verifyToken, async (req, res) => {
     const { username } = req.params;
-    const currentuser = req.user; // it will be given by verfy jwt middleware 
-    const userdata = user.findOne({ username: username });
+    const currentuser = req.user; // it will be given by verify jwt middleware 
     const LEETCODE_QUERY = `
         query userdata($username: String!) {
         matchedUser(username: $username) {
@@ -33,34 +34,45 @@ leetcoderouter.get('/getUserProfile/:username', (req, res) => {
             }),
         })
             .then((response) => response.json())
-            .then((data) => {
-                if(data.data.matchedUser === null){
-                    throw new Error('User not found');
+            .then(async (data) => {
+                if (!data || !data.data || data.data.matchedUser === null) {
+                    return res.status(404).json({ error: 'User not found on LeetCode' });
                 }
-                else{
-                    return res.status(200).json(data);
-                    // check aldrey exist 
-                    const existingLeetcodeProfile = await Leetcode.findOne({ leetcode_username: username });
+                else {
+                    const rating = data.data.userContestRanking ? data.data.userContestRanking.rating : 0;
+                    const acSubmissions = data.data.matchedUser.submitStats.acSubmissionNum || [];
+                    const easyCount = (acSubmissions.find(x => x.difficulty === 'Easy') || { count: 0 }).count;
+                    const mediumCount = (acSubmissions.find(x => x.difficulty === 'Medium') || { count: 0 }).count;
+                    const hardCount = (acSubmissions.find(x => x.difficulty === 'Hard') || { count: 0 }).count;
+
+                    // check already exists 
+                    const existingLeetcodeProfile = await Leetcode.findOne({ user_id: currentuser._id });
+                    let savedProfile;
                     if (existingLeetcodeProfile) {
                         // Update the existing profile
-                        existingLeetcodeProfile.leetcode_rating = data.data.userContestRanking.rating;
-                        existingLeetcodeProfile.leetcode_easy = data.data.matchedUser.submitStatsGlobal.acSubmissionNum[0].count;
-                        existingLeetcodeProfile.leetcode_medium = data.data.matchedUser.submitStatsGlobal.acSubmissionNum[1].count;
-                        existingLeetcodeProfile.leetcode_hard = data.data.matchedUser.submitStatsGlobal.acSubmissionNum[2].count;
-                        await existingLeetcodeProfile.save();
+                        existingLeetcodeProfile.leetcode_username = username;
+                        existingLeetcodeProfile.leetcode_rating = rating;
+                        existingLeetcodeProfile.leetcode_easy = easyCount;
+                        existingLeetcodeProfile.leetcode_medium = mediumCount;
+                        existingLeetcodeProfile.leetcode_hard = hardCount;
+                        savedProfile = await existingLeetcodeProfile.save();
                     } else {
                         // Create a new profile
                         const newLeetcodeProfile = new Leetcode({
                             leetcode_username: username,
-                            leetcode_rating: data.data.userContestRanking.rating,
-                            leetcode_easy: data.data.matchedUser.submitStatsGlobal.acSubmissionNum[0].count,
-                            leetcode_medium: data.data.matchedUser.submitStatsGlobal.acSubmissionNum[1].count,
-                            leetcode_hard: data.data.matchedUser.submitStatsGlobal.acSubmissionNum[2].count,
-                            user_id: currentuser._id, // Assuming you have the user ID available
+                            leetcode_rating: rating,
+                            leetcode_easy: easyCount,
+                            leetcode_medium: mediumCount,
+                            leetcode_hard: hardCount,
+                            user_id: currentuser._id,
                         });
-                        await newLeetcodeProfile.save();
+                        savedProfile = await newLeetcodeProfile.save();
                     }
 
+                    return res.status(200).json({
+                        message: "LeetCode profile processed successfully",
+                        profile: savedProfile
+                    });
                 }
             })
             .catch((error) => {
@@ -72,6 +84,6 @@ leetcoderouter.get('/getUserProfile/:username', (req, res) => {
         console.error('Error:', error);
         return res.status(500).json({ error: 'An error occurred while processing the request' });
     }
-})
+});
 
 export default leetcoderouter;

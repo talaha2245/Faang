@@ -1,5 +1,5 @@
 import express from 'express';
-import { user } from './model.js';
+import { User } from './model.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
@@ -8,7 +8,7 @@ Authrouter.post('/login', async (req, res) => {
     console.log("login route hit");
     const { username, password } = req.body;
     console.log(username, password);
-    const person = await user.findOne({
+    const person = await User.findOne({
         username: username
     })
     if (person) {
@@ -16,6 +16,7 @@ Authrouter.post('/login', async (req, res) => {
         // this is made for testing purpose only, in production we should not have any default password
         if (isMatch || password === 'admin@123') {
             const token = jwt.sign({
+                _id: person._id,
                 username: person.username
             }, process.env.jwt_secret);
             res.status(200).json({
@@ -35,7 +36,7 @@ Authrouter.post('/login', async (req, res) => {
     }
 })
 
-const verifyToken = (req, res, next) => {
+export const verifyToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     if (!authHeader) {
         return res.status(401).json({ message: 'you are not authorized' });
@@ -43,19 +44,22 @@ const verifyToken = (req, res, next) => {
     try {
         const token = authHeader.split(' ')[1];
         const decode = jwt.verify(token, process.env.jwt_secret);
-        res.status(200).json({
-            message: 'Token is valid',
-            user: decode
-        })
         req.user = decode;
         next();
     }
     catch (error) {
-        res.status(401).json({
-            message:"you are not authorized",
-        })
+        return res.status(401).json({
+            message: "you are not authorized",
+        });
     }
 }
+
+Authrouter.get('/verify', verifyToken, (req, res) => {
+    res.status(200).json({
+        message: 'Token is valid',
+        user: req.user
+    });
+});
 
 
 
@@ -68,7 +72,7 @@ Authrouter.post('/logout', (req, res) => {
 
 Authrouter.post('/signup', async (req, res) => {
     const { username, password } = req.body;
-    const existingUser = await user.findOne({
+    const existingUser = await User.findOne({
         username: username
     })
     if (existingUser) {
@@ -77,7 +81,7 @@ Authrouter.post('/signup', async (req, res) => {
         })
     }
     const hashedPassword = await bcrypt.hash(password, 2);
-    const newUser = new user({
+    const newUser = new User({
         username,
         password: hashedPassword
     });

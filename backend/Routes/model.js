@@ -1,10 +1,10 @@
 import mongodb from 'mongodb';
 import mongoose from 'mongoose';
 
-mongoose.connect(process.env.Connection_string || "mongodb://localhost:27017/").then(() => {
+mongoose.connect(process.env.MONGO_URL || process.env.Connection_string || "mongodb://localhost:27017/faang").then(() => {
     console.log(" connected sucessful to db ")
 }).catch((err) => {
-    console.log(" and error has been occures")
+    console.log(" and error has been occures", err)
 })
 
 const userSchema = new mongoose.Schema({
