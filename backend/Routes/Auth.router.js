@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt';
 const Authrouter = express.Router();
 
 Authrouter.post('/login', async (req, res) => {
+    console.log("login route hit");
     const { email, password } = req.body;
     const person = await user.findOne({
         email: email
@@ -20,6 +21,11 @@ Authrouter.post('/login', async (req, res) => {
                 message: "Invalid credentials"
             })
         }
+    }
+    else{
+        res.status(400).json({
+            message: "User not found"
+        })
     }
 })
 

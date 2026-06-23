@@ -8,7 +8,7 @@ mongoose.connect(process.env.Connection_string || "mongodb://localhost:27017/").
 })
 
 const userSchema = new mongoose.Schema({
-    name: {
+    email: {
         type: String,
         required: true
     },
