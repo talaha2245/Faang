@@ -6,6 +6,11 @@ import githubrouter from './githubsocre.js';
 import leetcoderouter from './Leetcode.router.js';
 
 const MainRouter = express.Router();
+// MainRouter.get('/', (req, res) => {
+//     res.json({
+//         message: "Welcome to the API"
+//     })
+// })
 MainRouter.use('/model',modelRouter);
 MainRouter.use('/auth',Authrouter);
 MainRouter.use('/github',githubrouter);
