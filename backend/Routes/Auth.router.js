@@ -35,6 +35,30 @@ Authrouter.post('/login', async (req, res) => {
     }
 })
 
+const verifyToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    if (!authHeader) {
+        return res.status(401).json({ message: 'you are not authorized' });
+    }
+    try {
+        const token = authHeader.split(' ')[1];
+        const decode = jwt.verify(token, process.env.jwt_secret);
+        res.status(200).json({
+            message: 'Token is valid',
+            user: decode
+        })
+        req.user = decode;
+        next();
+    }
+    catch (error) {
+        res.status(401).json({
+            message:"you are not authorized",
+        })
+    }
+}
+
+
+
 Authrouter.post('/logout', (req, res) => {
     // Invalidate the token on the client side (e.g., remove it from local storage)
     res.status(200).json({

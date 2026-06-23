@@ -17,8 +17,16 @@ const userSchema = new mongoose.Schema({
         required: true
     }
 })
+
+const leetcodeSchema = new mongoose.Schema({
+    leetcode_rating : Number,
+    leetcode_username : String,
+    leetcode_easy : Number,
+    leetcode_medium : Number,
+    user_id: mongoose.Schema.Types.ObjectId
+})
+
 const scoringModel = new mongoose.Schema({
-    leetcode_score: Number,
     github_score: Number,
     internship_score: Number,
     system_design_score: Number,
@@ -28,5 +36,6 @@ const scoringModel = new mongoose.Schema({
 
 const user = mongoose.model('User', userSchema);
 const scoring = mongoose.model('ScoringModel', scoringModel);
+const leetcode = mongoose.model('LeetcodeModel', leetcodeSchema);
 
-export { user, scoring };
+export { user, scoring, leetcode };

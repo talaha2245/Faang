@@ -1,5 +1,8 @@
-import express from 'express';
+import express from 'express'
+// storing the db
+import { leetcode } from './model.js';
 const leetcoderouter = express.Router();
+
 leetcoderouter.get('/getUserProfile/:username', (req, res) => {
     const { username } = req.params;
     const LEETCODE_QUERY = `
