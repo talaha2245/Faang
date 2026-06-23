@@ -8,6 +8,10 @@ venv/
 env/
 model_env/
 
+# for backdn
+.env
+backend/.env
+
 # Node
 node_modules/
 

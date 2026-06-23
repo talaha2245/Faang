@@ -23,6 +23,7 @@ const leetcodeSchema = new mongoose.Schema({
     leetcode_username : String,
     leetcode_easy : Number,
     leetcode_medium : Number,
+    leetcode_hard : Number,
     user_id: mongoose.Schema.Types.ObjectId
 })
 
@@ -34,8 +35,8 @@ const scoringModel = new mongoose.Schema({
     user_id: mongoose.Schema.Types.ObjectId
 })
 
-const user = mongoose.model('User', userSchema);
-const scoring = mongoose.model('ScoringModel', scoringModel);
-const leetcode = mongoose.model('LeetcodeModel', leetcodeSchema);
+const User = mongoose.model('User', userSchema);
+const DevScoring = mongoose.model('DevScoring', scoringModel);
+const Leetcode = mongoose.model('Leetcode', leetcodeSchema);
 
-export { user, scoring, leetcode };
+export { User, DevScoring, Leetcode };
