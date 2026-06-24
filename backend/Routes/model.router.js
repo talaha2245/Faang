@@ -17,11 +17,13 @@ const scriptPath = path.join(__dirname, '..', 'Model', 'predict.py');
 
 modelRouter.get('/prediction', verifyToken, async (req, res) => {
     try {
-        let username = req.query.username;
+        let loggedinUser = req.user;
         let user;
 
-        if (username) {
-            user = await User.findOne({ username });
+        console.log("Prediction route hit for user:", loggedinUser.username);
+
+        if (loggedinUser && loggedinUser.username) {
+            user = await User.findOne({ username: loggedinUser.username });
         } else if (req.user) {
             user = await User.findOne({ username: req.user.username });
         }
@@ -37,13 +39,13 @@ modelRouter.get('/prediction', verifyToken, async (req, res) => {
         // Build feature vector
         // Features expected: LeetCode_Rating, LC_Easy, LC_Medium, LC_Hard, System_Design_Score, Github_Dev_Score, Internship_Score
         const features = [
-            leetcode?.leetcode_rating ?? 0,
+            leetcode?.leetcode_rating ?? 1500,
             leetcode?.leetcode_easy ?? 0,
             leetcode?.leetcode_medium ?? 0,
             leetcode?.leetcode_hard ?? 0,
-            scoring?.system_design_score ?? 0,
-            scoring?.github_score ?? 0,
-            scoring?.internship_score ?? 0
+            scoring?.system_design_score ?? 1,
+            scoring?.github_score ?? 10,
+            scoring?.internship_score ?? 1
         ];
 
         // Execute Python prediction script

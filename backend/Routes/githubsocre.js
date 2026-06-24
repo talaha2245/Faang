@@ -16,8 +16,8 @@ const generateScore = (data) => {
 }
 
 githubrouter.get('/Profile/:username', verifyToken, (req, res) => {
-    const systemdesign_score = Number(req.body?.systemdesign_score ?? req.query?.systemdesign_score ?? 0);
-    const internship_score = Number(req.body?.internship_score ?? req.query?.internship_score ?? 0);
+    const systemdesign_score = Number(req.body?.systemdesign_score ?? req.query?.systemdesign_score ?? 1);
+    const internship_score = Number(req.body?.internship_score ?? req.query?.internship_score ?? 1);
 
     const { username } = req.params;
     const currentuser = req.user; // it will be given by verify jwt middleware
