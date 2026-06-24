@@ -39,7 +39,7 @@ leetcoderouter.get('/getUserProfile/:username', verifyToken, async (req, res) =>
                     return res.status(404).json({ error: 'User not found on LeetCode' });
                 }
                 else {
-                    const rating = data.data.userContestRanking ? data.data.userContestRanking.rating : 0;
+                    const rating = data.data.userContestRanking ? data.data.userContestRanking.rating : 1500;
                     const acSubmissions = data.data.matchedUser.submitStats.acSubmissionNum || [];
                     const easyCount = (acSubmissions.find(x => x.difficulty === 'Easy') || { count: 0 }).count;
                     const mediumCount = (acSubmissions.find(x => x.difficulty === 'Medium') || { count: 0 }).count;

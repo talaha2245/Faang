@@ -5,7 +5,6 @@ import jwt from 'jsonwebtoken';
 
 const Authrouter = express.Router();
 Authrouter.post('/login', async (req, res) => {
-    console.log("login route hit");
     const { username, password } = req.body;
     console.log(username, password);
     const person = await User.findOne({
@@ -45,6 +44,12 @@ export const verifyToken = (req, res, next) => {
         const token = authHeader.split(' ')[1];
         const decode = jwt.verify(token, process.env.jwt_secret);
         req.user = decode;
+//         // the formate of user 
+//         decoded user {
+//   _id: '6a3b750705fbf49bdabc3e4e', this is mongobd user id 
+//   username: 'talahanuman12345@gmail.com',
+//   iat: 1782281582
+// }
         next();
     }
     catch (error) {

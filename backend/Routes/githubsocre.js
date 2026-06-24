@@ -6,14 +6,16 @@ const githubrouter = express.Router();
 
 const generateScore = (data) => {
     let max_repos = 50;
-    let max_contributions = 1000;
-    let repos_score = Math.min(data.user.repositories.totalCount / max_repos, 1) / max_repos * 40;
-    let contributions_score = Math.min(data.user.contributionsCollection.contributionCalendar.totalContributions / max_contributions, 1) / max_contributions * 50;
+    let max_contributions = 300;
+    let repos_score = Math.min(data.user.repositories.totalCount / max_repos, 1)* 40;
+    let contributions_score = Math.min(data.user.contributionsCollection.contributionCalendar.totalContributions / max_contributions, 1)* 50;
     // should not let the score exceed 100 
+    // console.log("this is from generate score " + repos_score + ", " +   contributions_score);
     return Math.min(10 + repos_score + contributions_score, 100);
+
 }
 
-githubrouter.get('/GithubUserProfile/:username', verifyToken, (req, res) => {
+githubrouter.get('/Profile/:username', verifyToken, (req, res) => {
     const systemdesign_score = Number(req.body?.systemdesign_score ?? req.query?.systemdesign_score ?? 0);
     const internship_score = Number(req.body?.internship_score ?? req.query?.internship_score ?? 0);
 
@@ -46,6 +48,11 @@ githubrouter.get('/GithubUserProfile/:username', verifyToken, (req, res) => {
     })
         .then((response) => response.json())
         .then((data) => {
+            // console.log('GitHub API response:', data,username);
+            // return res.json({
+            //     msg : "data fetched successfully",
+            //     data : data
+            // })
             if (data.errors || !data.data || !data.data.user) {
                 return res.status(404).json({ message: 'User not found on GitHub' });
             }
